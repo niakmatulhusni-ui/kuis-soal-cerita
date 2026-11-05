@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Angka - Kuis Matematika Kelas 3 SD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky1:#a8edea; --sky2:#fed6e3;
+    --primary:#4d96ff; --primary-d:#2f6fd0;
+    --green:#3ddc84; --green-d:#21a35f;
+    --orange:#ff9f43; --orange-d:#e67e22;
+    --red:#ff6b6b; --red-d:#e74c3c;
+    --yellow:#ffd93d; --yellow-d:#f1c40f;
+    --purple:#a55eea; --purple-d:#8e44ad;
+    --ink:#2d3436; --paper:#ffffff;
+    --soft:#f7faff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Fredoka','Baloo 2',system-ui,-apple-system,sans-serif;
+    background:linear-gradient(135deg,var(--sky1),var(--sky2));
+    min-height:100vh;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    padding:14px;overflow-x:hidden;
+  }
+  /* floating background emojis */
+  .bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .bg-deco span{position:absolute;font-size:28px;opacity:.45;animation:floaty 9s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-26px) rotate(10deg)}}
+
+  .app{
+    position:relative;z-index:1;width:100%;max-width:760px;
+    background:var(--paper);border-radius:28px;
+    box-shadow:0 18px 50px rgba(45,52,54,.18), 0 4px 0 rgba(255,255,255,.6) inset;
+    padding:22px;overflow:hidden;
+  }
+
+  /* ---------- HEADER / MASCOT ---------- */
+  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .mascot{font-size:42px;flex-shrink:0;animation:bounce 2.2s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .title-wrap{flex:1;min-width:0}
+  .title{font-family:'Baloo 2';font-weight:800;font-size:22px;color:var(--primary-d);line-height:1.1}
+  .subtitle{font-size:13px;color:#636e72;margin-top:2px}
+
+  /* ---------- PROGRESS ---------- */
+  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .progress-track{flex:1;height:14px;background:#eef2ff;border-radius:99px;overflow:hidden;position:relative}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#3ddc84,#4d96ff);border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .progress-text{font-size:13px;font-weight:600;color:#636e72;white-space:nowrap}
+  .section-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:linear-gradient(135deg,#fff3bf,#ffe08a);color:#b8860b;
+    font-weight:700;font-size:13px;padding:6px 14px;border-radius:99px;margin-bottom:14px;
+    box-shadow:0 3px 0 rgba(184,134,11,.15);
+  }
+  .section-badge .dot{width:8px;height:8px;border-radius:50%;background:#ff9f43}
+
+  /* ---------- SCREENS ---------- */
+  .screen{display:none;animation:fadeIn .4s ease}
+  .screen.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ---------- COVER ---------- */
+  #cover{text-align:center;padding:14px 6px 6px}
+  #cover .hero{font-size:70px;line-height:1;margin-bottom:8px}
+  #cover h1{font-family:'Baloo 2';font-weight:800;font-size:30px;color:var(--primary-d);margin-bottom:6px}
+  #cover .lede{font-size:15px;color:#636e72;margin-bottom:18px;max-width:520px;margin-left:auto;margin-right:auto}
+  .info-card{
+    background:linear-gradient(135deg,#eaf3ff,#f0eaff);
+    border-radius:20px;padding:18px;margin:0 auto 16px;max-width:520px;
+    text-align:left;border:2px dashed #cdd9ff;
+  }
+  .field{margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-weight:600;font-size:14px;margin-bottom:6px;color:var(--ink)}
+  .field input{
+    width:100%;padding:13px 16px;font-size:16px;font-family:inherit;
+    border:3px solid #cdd9ff;border-radius:14px;background:#fff;outline:none;transition:.2s;
+  }
+  .field input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(77,150,255,.18)}
+  .class-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    flex:1;min-width:90px;text-align:center;padding:11px 8px;border-radius:12px;
+    border:3px solid #cdd9ff;background:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:.15s;user-select:none;
+  }
+  .chip:hover{border-color:var(--primary)}
+  .chip.active{background:var(--primary);border-color:var(--primary);color:#fff;transform:translateY(-2px);box-shadow:0 6px 14px rgba(77,150,255,.35)}
+  .err{color:var(--red-d);font-size:13px;font-weight:600;margin-top:8px;min-height:18px}
+
+  /* ---------- BUTTONS ---------- */
+  .btn{
+    font-family:'Baloo 2';font-weight:700;font-size:18px;
+    border:none;border-radius:16px;padding:14px 30px;cursor:pointer;
+    transition:transform .12s, box-shadow .12s, opacity .2s;color:#fff;
+  }
+  .btn-primary{background:linear-gradient(135deg,#4d96ff,#2f6fd0);box-shadow:0 6px 0 var(--primary-d)}
+  .btn-green{background:linear-gradient(135deg,#3ddc84,#21a35f);box-shadow:0 6px 0 var(--green-d)}
+  .btn-orange{background:linear-gradient(135deg,#ff9f43,#e67e22);box-shadow:0 6px 0 var(--orange-d)}
+  .btn:hover{transform:translateY(-2px)}
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-d)}
+  .btn-green:active{box-shadow:0 2px 0 var(--green-d)}
+  .btn-orange:active{box-shadow:0 2px 0 var(--orange-d)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:0 6px 0 var(--primary-d)}
+  .btn-big{font-size:20px;padding:16px 40px;width:100%}
+
+  /* ---------- QUESTION CARD ---------- */
+  .q-num{font-family:'Baloo 2';font-weight:800;color:var(--primary-d);font-size:18px}
+  .story{
+    background:linear-gradient(135deg,#fff8e7,#fff3bf);border-radius:18px;
+    padding:14px 18px;font-size:15.5px;line-height:1.5;margin-bottom:14px;
+    border-left:6px solid var(--yellow-d);position:relative;
+  }
+  .story .badge{display:inline-block;background:var(--yellow-d);color:#fff;font-weight:700;font-size:12px;padding:3px 10px;border-radius:99px;margin-bottom:6px}
+  .ask{font-size:18px;font-weight:600;margin-bottom:16px;line-height:1.45}
+  .ask b{color:var(--primary-d)}
+
+  .answer-area{margin-bottom:14px}
+
+  /* multiple choice */
+  .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt{
+    background:#fff;border:3px solid #d8e2ff;border-radius:16px;padding:16px 14px;
+    font-family:'Baloo 2';font-weight:700;font-size:22px;cursor:pointer;transition:.15s;text-align:center;
+    user-select:none;color:var(--ink);
+  }
+  .opt:hover{border-color:var(--primary);transform:translateY(-2px)}
+  .opt.correct{background:linear-gradient(135deg,#c6f7d4,#a8e9bd);border-color:var(--green-d);color:var(--green-d)}
+  .opt.wrong{background:#ffd9d9;border-color:var(--red-d);color:var(--red-d);animation:shake .4s}
+  .opt.reveal{background:linear-gradient(135deg,#c6f7d4,#a8e9bd);border-color:var(--green-d);color:var(--green-d);animation:pulse 1s ease infinite}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+  /* image-choice (emoji) */
+  .opts-emoji{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt-emoji{background:#fff;border:3px solid #ffe9b3;border-radius:16px;padding:14px;cursor:pointer;transition:.15s;text-align:center}
+  .opt-emoji:hover{border-color:var(--orange);transform:translateY(-2px)}
+  .opt-emoji .emo{font-size:30px;display:block;line-height:1}
+  .opt-emoji .val{font-family:'Baloo 2';font-weight:700;font-size:20px;margin-top:6px}
+  .opt-emoji.correct{background:linear-gradient(135deg,#c6f7d4,#a8e9bd);border-color:var(--green-d)}
+  .opt-emoji.wrong{background:#ffd9d9;border-color:var(--red-d);animation:shake .4s}
+  .opt-emoji.reveal{background:linear-gradient(135deg,#c6f7d4,#a8e9bd);border-color:var(--green-d);animation:pulse 1s ease infinite}
+
+  /* fill blank */
+  .fill-wrap{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+  .fill-input{
+    flex:1;min-width:180px;font-family:'Baloo 2';font-weight:700;font-size:28px;
+    text-align:center;padding:12px;border:3px solid #d8e2ff;border-radius:16px;outline:none;background:#fff;
+  }
+  .fill-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(77,150,255,.18)}
+  .fill-input.wrong{border-color:var(--red-d);background:#fff0f0;animation:shake .4s}
+  .fill-input.correct{border-color:var(--green-d);background:#f0fff5}
+  .btn-check{flex:0 0 auto}
+
+  /* click-answer bubbles */
+  .bubbles{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:8px 0 4px}
+  .bubble{
+    width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2';font-weight:800;font-size:26px;cursor:pointer;transition:.15s;
+    background:radial-gradient(circle at 35% 30%,#fff,#e8f0ff);border:4px solid #b8c8ff;color:var(--primary-d);
+    box-shadow:0 6px 14px rgba(77,150,255,.25);user-select:none;
+  }
+  .bubble:hover{transform:translateY(-4px) scale(1.04)}
+  .bubble.correct{background:radial-gradient(circle at 35% 30%,#d4f8df,#a8e9bd);border-color:var(--green-d);color:var(--green-d)}
+  .bubble.wrong{background:radial-gradient(circle at 35% 30%,#ffd9d9,#ffb3b3);border-color:var(--red-d);color:var(--red-d);animation:shake .4s}
+  .bubble.reveal{background:radial-gradient(circle at 35% 30%,#d4f8df,#a8e9bd);border-color:var(--green-d);color:var(--green-d);animation:pulse 1s ease infinite}
+  .bubble.hint{font-size:14px;line-height:1.2;text-align:center}
+
+  /* ---------- FEEDBACK ---------- */
+  .feedback{
+    min-height:64px;border-radius:16px;padding:14px 16px;margin-bottom:14px;
+    display:flex;align-items:center;gap:12px;font-size:15px;line-height:1.4;
+    opacity:0;transform:translateY(6px);transition:.25s;pointer-events:none;
+  }
+  .feedback.show{opacity:1;transform:translateY(0)}
+  .feedback .ico{font-size:30px;flex-shrink:0}
+  .feedback.ok{background:linear-gradient(135deg,#e6fff0,#c6f7d4);color:#156a3e;border:2px solid var(--green-d)}
+  .feedback.retry{background:linear-gradient(135deg,#fff6e6,#ffe7c2);color:#9a6212;border:2px solid var(--orange-d)}
+  .feedback.reveal{background:linear-gradient(135deg,#eef3ff,#d8e2ff);color:#3a4a8a;border:2px solid var(--primary)}
+  .fb-title{font-family:'Baloo 2';font-weight:800;font-size:16px;margin-bottom:2px}
+
+  .nav-row{display:flex;align-items:center;gap:12px}
+  .nav-row .spacer{flex:1}
+  .attempts-dots{display:flex;gap:6px;align-items:center;font-size:12px;color:#636e72;font-weight:600}
+  .dot-attempt{width:12px;height:12px;border-radius:50%;background:#dfe4ea}
+  .dot-attempt.lost{background:var(--red)}
+  .dot-attempt.live{background:var(--green);box-shadow:0 0 0 3px #c6f7d4}
+
+  /* ---------- RESULT ---------- */
+  #result{text-align:center;padding:10px 6px}
+  #result .hero{font-size:80px;margin-bottom:6px;animation:bounce 1.6s ease-in-out infinite}
+  #result h2{font-family:'Baloo 2';font-weight:800;font-size:30px;color:var(--primary-d);margin-bottom:4px}
+  #result .student-line{font-size:15px;color:#636e72;margin-bottom:16px}
+  .stars{font-size:40px;margin-bottom:14px;letter-spacing:6px}
+  .stars .star-off{filter:grayscale(1);opacity:.3}
+  .score-box{
+    background:linear-gradient(135deg,#eaf3ff,#f0eaff);border-radius:20px;padding:18px;margin:0 auto 16px;max-width:480px;
+    border:2px dashed #cdd9ff;
+  }
+  .score-big{font-family:'Baloo 2';font-weight:800;font-size:46px;color:var(--green-d);line-height:1}
+  .score-sub{font-size:14px;color:#636e72;margin-top:6px}
+  .breakdown{display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+  .stat{background:#fff;border-radius:14px;padding:10px 16px;border:2px solid #e3eaff;min-width:120px}
+  .stat .n{font-family:'Baloo 2';font-weight:800;font-size:22px}
+  .stat .l{font-size:12px;color:#636e72}
+  .final-msg{font-size:16px;font-weight:600;color:var(--ink);max-width:500px;margin:0 auto 18px;line-height:1.5}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+  /* confetti */
+  .confetti{position:fixed;width:10px;height:14px;top:-20px;z-index:9999;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
+
+  @media (max-width:540px){
+    .app{padding:16px}
+    .title{font-size:18px}
+    .story{font-size:14.5px}
+    .ask{font-size:16px}
+    .opts-grid,.opts-emoji{gap:10px}
+    .opt,.opt-emoji .val{font-size:19px}
+    .bubble{width:80px;height:80px;font-size:22px}
+    .btn-big{font-size:17px;padding:14px 24px}
+    #cover h1{font-size:24px}
+    #cover .hero{font-size:56px}
+  }
+</style>
+</head>
+<body>
+<div class="bg-deco" id="bgDeco"></div>
+
+<div class="app">
+  <div class="topbar">
+    <div class="mascot">🦉</div>
+    <div class="title-wrap">
+      <div class="title">Petualangan Angka 🚀</div>
+      <div class="subtitle">Kuis Matematika Kelas 3 SD</div>
+    </div>
+  </div>
+
+  <!-- progress (hidden on cover) -->
+  <div id="progressWrap" style="display:none">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+      <div class="progress-text" id="progText">0 / 8</div>
+    </div>
+    <div class="section-badge" id="secBadge"><span class="dot"></span><span id="secLabel">Bagian 1 · Penjumlahan ➕</span></div>
+  </div>
+
+  <!-- ============ COVER ============ -->
+  <div class="screen active" id="cover">
+    <div class="hero">🌈✏️🔢</div>
+    <h1>Yuk, Berpetualang dengan Angka!</h1>
+    <p class="lede">Halo, siswa hebat! Sebelum mulai, tulis namamu dan pilih kelasmu dulu ya. Ada 8 soal seru menunggumu — penjumlahan dan pengurangan. Semangat! 💪</p>
+    <div class="info-card">
+      <div class="field">
+        <label for="namaInput">🏷️ Namamu siapa?</label>
+        <input id="namaInput" type="text" placeholder="Tulis namamu di sini..." maxlength="30" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>🏫 Kelasmu yang mana?</label>
+        <div class="class-chips" id="classChips">
+          <div class="chip" data-k="3A">Kelas 3A</div>
+          <div class="chip" data-k="3B">Kelas 3B</div>
+          <div class="chip" data-k="3C">Kelas 3C</div>
+          <div class="chip" data-k="3D">Kelas 3D</div>
+        </div>
+      </div>
+      <div class="err" id="coverErr"></div>
+    </div>
+    <button class="btn btn-primary btn-big" id="startBtn">Mulai Petualangan! 🎉</button>
+  </div>
+
+  <!-- ============ QUIZ ============ -->
+  <div class="screen" id="quiz">
+    <div class="q-num" id="qNum">Soal 1 dari 8</div>
+    <div class="story" id="qStory"></div>
+    <div class="ask" id="qAsk"></div>
+    <div class="answer-area" id="answerArea"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="nav-row">
+      <div class="attempts-dots" id="attemptDots">
+        <span>Kesempatan: </span><span class="dot-attempt live"></span><span class="dot-attempt"></span>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-green" id="nextBtn" disabled>Lanjut ➡️</button>
+    </div>
+  </div>
+
+  <!-- ============ RESULT ============ -->
+  <div class="screen" id="result">
+    <div class="hero" id="resHero">🏆</div>
+    <h2 id="resTitle">Petualangan Selesai!</h2>
+    <div class="student-line" id="resStudent"></div>
+    <div class="stars" id="resStars"></div>
+    <div class="score-box">
+      <div class="score-big" id="resScore">0</div>
+      <div class="score-sub">dari 8 soal benar pada kesempatan pertama</div>
+    </div>
+    <div class="breakdown" id="resBreakdown"></div>
+    <div class="final-msg" id="resMsg"></div>
+    <div class="actions">
+      <button class="btn btn-orange" id="restartBtn">Ulangi Kuis 🔄</button>
+      <button class="btn btn-primary" id="printBtn">Cetak Hasil 🖨️</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= DATA SOAL ================= */
+const QUESTIONS = [
+  { id:1, section:'penjumlahan', sectionTitle:'Bagian 1 · Penjumlahan ➕',
+    story:'Pak Tani punya dua kebun kelapa sawit. Kebun A menghasilkan 328 buah dan kebun B menghasilkan 579 buah.',
+    ask:'Berapakah <b>jumlah</b> kelapa sawit yang dihasilkan dari kebun A dan kebun B?',
+    type:'choice',
+    options:[907, 897, 807, 917], correct:907 },
+
+  { id:2, section:'penjumlahan', sectionTitle:'Bagian 1 · Penjumlahan ➕',
+    story:'SD Pelangi mengirimkan siswa untuk mengikuti lomba. Ada 121 siswa lomba matematika, 29 siswa lomba bahasa Inggris, dan 98 siswa lomba sains.',
+    ask:'Berapa <b>keseluruhan</b> siswa SD Pelangi yang mengikuti lomba? Ketik jawabanmu pada kotak di bawah!',
+    type:'fill', correct:248 },
+
+  { id:3, section:'penjumlahan', sectionTitle:'Bagian 1 · Penjumlahan ➕',
+    story:'Pak Rahmad, Pak Sudi, dan Pak Jaya memanen ikan lele. Pak Rahmad punya 117 ekor, Pak Sudi 105 ekor, dan Pak Jaya 242 ekor. Semua ikan akan dijual ke pasar.',
+    ask:'Berapa <b>keseluruhan</b> ikan lele yang akan dijual ke pasar? <b>Klik gelembung</b> angka yang benar!',
+    type:'click',
+    options:[464, 454, 474, 364], correct:464 },
+
+  { id:4, section:'penjumlahan', sectionTitle:'Bagian 1 · Penjumlahan ➕',
+    story:'Helen mengoleksi stiker. Dia punya 111 stiker gambar kartun, 77 stiker gambar bunga, dan 89 stiker boneka.',
+    ask:'Berapa <b>jumlah keseluruhan</b> stiker Helen? Pilih jawaban yang benar!',
+    type:'choice-emoji',
+    options:[{v:277,e:'⭐'},{v:267,e:'🌟'},{v:287,e:'✨'},{v:377,e:'💫'}], correct:277 },
+
+  { id:5, section:'pengurangan', sectionTitle:'Bagian 2 · Pengurangan ➖',
+    story:'Penjual buah mempunyai 333 buah apel. Seorang pembeli datang dan membeli 129 buah apel.',
+    ask:'Berapakah <b>sisa</b> buah apel milik penjual? Ketik jawabanmu pada kotak di bawah!',
+    type:'fill', correct:204 },
+
+  { id:6, section:'pengurangan', sectionTitle:'Bagian 2 · Pengurangan ➖',
+    story:'SD Bangkit mengadakan darmawisata. Seluruh siswa yang ikut sebanyak 427 siswa. Sebanyak 218 di antaranya adalah siswa perempuan.',
+    ask:'Berapa <b>jumlah siswa laki-laki</b> yang mengikuti darmawisata?',
+    type:'choice',
+    options:[209, 219, 199, 309], correct:209 },
+
+  { id:7, section:'pengurangan', sectionTitle:'Bagian 2 · Pengurangan ➖',
+    story:'Kebun mangga Pak Joyo mengalami gagal panen. Hasil panen kali ini diperoleh 765 buah, sedangkan buah yang busuk sebanyak 179 buah.',
+    ask:'Berapa <b>banyak mangga yang tersisa</b>? <b>Klik gelembung</b> angka yang benar!',
+    type:'click',
+    options:[586, 576, 596, 486], correct:586 },
+
+  { id:8, section:'pengurangan', sectionTitle:'Bagian 2 · Pengurangan ➖',
+    story:'Pada Upacara Bendera Hari Kemerdekaan RI, SD Harapan mengirimkan 128 siswa ke alun-alun kota. Terdapat 79 siswa laki-laki di antaranya.',
+    ask:'Berapakah <b>siswa perempuan</b> yang mengikuti upacara di alun-alun kota? Ketik jawabanmu pada kotak di bawah!',
+    type:'fill', correct:49 },
+];
+
+/* ================= STATE ================= */
+const state = {
+  nama:'', kelas:'',
+  idx:0,
+  attempts:0,        // salah pada soal berjalan (0,1,2)
+  resolved:false,   // soal selesai (benar / sudah reveal jawaban)
+  firstTryCorrect:[], // boolean per soal
+};
+
+/* ================= UTIL ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+const OK_MSGS = [
+  ['Hebat! 🎉','Jawabanmu tepat sekali. Kamu pintar!'],
+  ['Keren! 🌟','Langkah yang benar, lanjutkan petualanganmu!'],
+  ['Pintar sekali! ⭐','Otakmu menyala terang. Mantap!'],
+  ['Bagus sekali! 🏆','Kamu memang juara. Teruskan!'],
+  ['Mantap! 👍','Tepat sasaran. Kamu luar biasa!'],
+  ['Luar biasa! 🚀','Satu langkah lagi dekat ke garis finish.'],
+];
+const RETRY_MSGS = [
+  ['Belum tepat, coba lagi ya!','Kamu pasti bisa. Baca lagi soalnya pelan-pelan. 💪'],
+  ['Hampir benar! 🤔','Coba periksa lagi penjumlahan/pengurangannya. Semangat!'],
+  ['Jangan menyerah! ✨','Masih ada satu kesempatan lagi. Yuk coba sekali lagi!'],
+];
+const REVEAL_MSGS = [
+  ['Yuk lihat jawabannya 📚','Tidak apa-apa, belajar dari kesalahan itu bagus!'],
+  ['Belum tepat 🌈','Pelan-pelan ya. Lihat jawaban benarnya di bawah, lalu lanjut!'],
+];
+
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+/* confetti */
+function confetti(n){
+  const colors=['#ff6b6b','#ffd93d','#3ddc84','#4d96ff','#a55eea','#ff9f43'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration=(2.4+Math.random()*1.6)+'s';
+    c.style.transform='rotate('+Math.random()*360+'deg)';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4200);
+  }
+}
+
+/* background deco */
+(function deco(){
+  const em=['➕','➖','✏️','⭐','🍎','🐟','🌸','🥭','🔢','🚀','📚','🌟'];
+  const wrap=$('#bgDeco');
+  for(let i=0;i<14;i++){
+    const s=document.createElement('span');
+    s.textContent=em[Math.floor(Math.random()*em.length)];
+    s.style.left=Math.random()*100+'vw';
+    s.style.top=Math.random()*100+'vh';
+    s.style.animationDelay=(Math.random()*6)+'s';
+    s.style.animationDuration=(6+Math.random()*6)+'s';
+    wrap.appendChild(s);
+  }
+})();
+
+/* ================= COVER ================= */
+let chosenKelas='';
+$$('#classChips .chip').forEach(ch=>{
+  ch.addEventListener('click',()=>{
+    $$('#classChips .chip').forEach(c=>c.classList.remove('active'));
+    ch.classList.add('active');
+    chosenKelas=ch.dataset.k;
+    $('#coverErr').textContent='';
+  });
+});
+$('#namaInput').addEventListener('input',()=>{ $('#coverErr').textContent=''; });
+$('#namaInput').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#startBtn').click(); });
+
+$('#startBtn').addEventListener('click',()=>{
+  const nama=$('#namaInput').value.trim();
+  if(!nama){ $('#coverErr').textContent='⚠️ Yuk tulis namamu dulu!'; $('#namaInput').focus(); return; }
+  if(!chosenKelas){ $('#coverErr').textContent='⚠️ Pilih kelasmu dulu ya!'; return; }
+  state.nama=nama; state.kelas=chosenKelas;
+  state.idx=0; state.attempts=0; state.resolved=false; state.firstTryCorrect=[];
+  switchScreen('quiz');
+  $('#progressWrap').style.display='block';
+  renderQuestion();
+});
+
+function switchScreen(id){
+  $$('.screen').forEach(s=>s.classList.remove('active'));
+  $('#'+id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ================= RENDER QUESTION ================= */
+function renderQuestion(){
+  const q=QUESTIONS[state.idx];
+  state.attempts=0; state.resolved=false;
+
+  // progress
+  $('#progText').textContent=(state.idx+1)+' / 8';
+  $('#progFill').style.width=((state.idx)/8*100)+'%';
+  $('#secLabel').textContent=q.sectionTitle;
+
+  $('#qNum').textContent='Soal '+(state.idx+1)+' dari 8';
+  $('#qStory').innerHTML='<span class="badge">📖 Cerita</span> '+q.story;
+  $('#qAsk').innerHTML=q.ask;
+  $('#feedback').className='feedback'; $('#feedback').innerHTML='';
+  $('#nextBtn').disabled=true;
+  $('#nextBtn').textContent = state.idx===QUESTIONS.length-1 ? 'Lihat Hasil 🏁' : 'Lanjut ➡️';
+  updateAttemptDots();
+
+  const area=$('#answerArea');
+  area.innerHTML='';
+  if(q.type==='choice') renderChoice(area,q);
+  else if(q.type==='choice-emoji') renderChoiceEmoji(area,q);
+  else if(q.type==='fill') renderFill(area,q);
+  else if(q.type==='click') renderClick(area,q);
+}
+
+function updateAttemptDots(){
+  const dots=$$('#attemptDots .dot-attempt');
+  // dot 1 = first chance, dot 2 = retry chance
+  dots[0].className='dot-attempt '+(state.attempts===0?'live':(state.resolved?'':'lost'));
+  dots[1].className='dot-attempt '+(state.attempts===0?'':(state.attempts===1?'live':'lost'));
+}
+
+/* ---- multiple choice ---- */
+function renderChoice(area,q){
+  const grid=document.createElement('div'); grid.className='opts-grid';
+  q.options.forEach(opt=>{
+    const b=document.createElement('div');
+    b.className='opt'; b.textContent=opt;
+    b.addEventListener('click',()=>handleChoiceAnswer(q,b,grid,'opt'));
+    grid.appendChild(b);
+  });
+  area.appendChild(grid);
+}
+function renderChoiceEmoji(area,q){
+  const grid=document.createElement('div'); grid.className='opts-emoji';
+  q.options.forEach(opt=>{
+    const b=document.createElement('div');
+    b.className='opt-emoji';
+    b.innerHTML='<span class="emo">'+opt.e+'</span><span class="val">'+opt.v+'</span>';
+    b.dataset.val=opt.v;
+    b.addEventListener('click',()=>handleChoiceAnswer(q,b,grid,'opt-emoji'));
+    grid.appendChild(b);
+  });
+  area.appendChild(grid);
+}
+function handleChoiceAnswer(q,btn,grid,cls){
+  if(state.resolved) return;
+  const val=cls==='opt-emoji'? Number(btn.dataset.val) : Number(btn.textContent);
+  if(val===q.correct){
+    grid.querySelectorAll('.'+cls).forEach(el=>{ el.style.pointerEvents='none'; });
+    btn.classList.add('correct');
+    onCorrect(q, true);
+  } else {
+    btn.classList.add('wrong');
+    grid.querySelectorAll('.'+cls).forEach(el=>{ if(!el.classList.contains('correct')) el.style.pointerEvents='none'; });
+    setTimeout(()=>{ btn.classList.remove('wrong'); grid.querySelectorAll('.'+cls).forEach(el=>{ el.style.pointerEvents=''; }); }, 600);
+    onWrong(q, grid, cls);
+  }
+}
+
+/* ---- fill blank ---- */
+function renderFill(area,q){
+  const wrap=document.createElement('div'); wrap.className='fill-wrap';
+  const input=document.createElement('input');
+  input.type='text'; input.inputMode='numeric'; input.pattern='[0-9]*';
+  input.className='fill-input'; input.id='fillInput'; input.placeholder='?'; input.autocomplete='off';
+  const btn=document.createElement('button');
+  btn.className='btn btn-orange btn-check'; btn.textContent='Periksa ✅';
+  btn.addEventListener('click',()=>checkFill(q,input));
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter') checkFill(q,input); });
+  wrap.appendChild(input); wrap.appendChild(btn);
+  area.appendChild(wrap);
+  setTimeout(()=>input.focus(),60);
+}
+function checkFill(q,input){
+  if(state.resolved) return;
+  const raw=input.value.trim();
+  if(raw===''){ flashInput(input); return; }
+  const val=Number(raw);
+  if(val===q.correct){
+    input.classList.add('correct'); input.disabled=true;
+    $('#answerArea .btn-check').disabled=true;
+    onCorrect(q,true);
+  } else {
+    input.classList.add('wrong');
+    setTimeout(()=>{ input.classList.remove('wrong'); input.value=''; input.focus(); }, 600);
+    onWrong(q,null,null,input);
+  }
+}
+function flashInput(input){
+  input.classList.add('wrong');
+  setTimeout(()=>input.classList.remove('wrong'),400);
+}
+
+/* ---- click bubbles ---- */
+function renderClick(area,q){
+  const wrap=document.createElement('div'); wrap.className='bubbles';
+  // shuffle
+  const arr=q.options.slice();
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  arr.forEach(opt=>{
+    const b=document.createElement('div');
+    b.className='bubble'; b.textContent=opt;
+    b.addEventListener('click',()=>handleBubbleAnswer(q,b,wrap));
+    wrap.appendChild(b);
+  });
+  area.appendChild(wrap);
+}
+function handleBubbleAnswer(q,btn,wrap){
+  if(state.resolved) return;
+  const val=Number(btn.textContent);
+  if(val===q.correct){
+    wrap.querySelectorAll('.bubble').forEach(el=>{ el.style.pointerEvents='none'; });
+    btn.classList.add('correct');
+    onCorrect(q,true);
+  } else {
+    btn.classList.add('wrong');
+    wrap.querySelectorAll('.bubble').forEach(el=>{ if(!el.classList.contains('correct')) el.style.pointerEvents='none'; });
+    setTimeout(()=>{ btn.classList.remove('wrong'); wrap.querySelectorAll('.bubble').forEach(el=>{ el.style.pointerEvents=''; }); }, 600);
+    onWrong(q,wrap,'bubble');
+  }
+}
+
+/* ================= FEEDBACK / FLOW ================= */
+function onCorrect(q, firstTry){
+  state.resolved=true;
+  const ft = state.attempts===0;
+  state.firstTryCorrect[state.idx]=ft;
+  const m=pick(OK_MSGS);
+  showFeedback('ok','✅','ok',m[0],m[1]);
+  $('#nextBtn').disabled=false;
+  updateAttemptDots();
+  confetti(60);
+  // gentle auto-advance hint
+  $('#nextBtn').classList.add('btn-green');
+}
+
+function onWrong(q, container, cls, inputEl){
+  state.attempts++;
+  updateAttemptDots();
+  if(state.attempts===1){
+    // first wrong -> allow ONE retry
+    const m=pick(RETRY_MSGS);
+    showFeedback('retry','💪','retry',m[0],m[1]+' Masih ada <b>1 kesempatan</b> untuk mencoba lagi.');
+  } else {
+    // second wrong -> reveal correct answer, must acknowledge, then proceed
+    state.firstTryCorrect[state.idx]=false;
+    revealCorrect(q, container, cls, inputEl);
+    const m=pick(REVEAL_MSGS);
+    showFeedback('reveal','💡','reveal',m[0],m[1]+' <b>Jawaban yang benar adalah '+q.correct+'.</b> Yuk pahami, lalu lanjut ke soal berikutnya!');
+    state.resolved=true;
+    $('#nextBtn').disabled=false;
+  }
+}
+
+function revealCorrect(q, container, cls, inputEl){
+  if(inputEl){ // fill type
+    inputEl.value=q.correct;
+    inputEl.classList.add('correct'); inputEl.disabled=true;
+    $('#answerArea .btn-check').disabled=true;
+    return;
+  }
+  if(!container) return;
+  container.querySelectorAll('.'+cls).forEach(el=>{
+    el.style.pointerEvents='none';
+    let v;
+    if(cls==='opt') v=Number(el.textContent);
+    else if(cls==='opt-emoji') v=Number(el.dataset.val);
+    else if(cls==='bubble') v=Number(el.textContent);
+    if(v===q.correct) el.classList.add('reveal');
+  });
+}
+
+function showFeedback(kind,icon,cls,title,body){
+  const fb=$('#feedback');
+  fb.className='feedback '+cls;
+  fb.innerHTML='<div class="ico">'+icon+'</div><div><div class="fb-title">'+title+'</div><div>'+body+'</div></div>';
+  // re-trigger animation
+  fb.offsetHeight;
+  fb.classList.add('show');
+}
+
+/* ================= NEXT / RESULT ================= */
+$('#nextBtn').addEventListener('click',()=>{
+  if(!state.resolved) return;
+  if(state.idx < QUESTIONS.length-1){
+    state.idx++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  // mark last progress full
+  $('#progFill').style.width='100%';
+  $('#progText').textContent='8 / 8';
+  $('#progressWrap').style.display='none';
+  switchScreen('result');
+
+  const correct=state.firstTryCorrect.filter(Boolean).length;
+  const retried=QUESTIONS.length-correct; // benar setelah ulang atau di-reveal
+  // stars: full star for first-try correct
+  let stars='';
+  for(let i=0;i<QUESTIONS.length;i++){
+    stars += state.firstTryCorrect[i] ? '⭐' : '<span class="star-off">⭐</span>';
+  }
+  $('#resStars').innerHTML=stars;
+  $('#resStudent').textContent='Hasil '+state.nama+' — Kelas '+state.kelas;
+  $('#resScore').textContent=correct;
+
+  $('#resBreakdown').innerHTML=
+    '<div class="stat"><div class="n" style="color:#21a35f">'+correct+'</div><div class="l">✅ Benar langsung</div></div>'+
+    '<div class="stat"><div class="n" style="color:#e67e22">'+(QUESTIONS.length-correct)+'</div><div class="l">💪 Perlu bantuan</div></div>'+
+    '<div class="stat"><div class="n" style="color:#2f6fd0">'+Math.round(correct/QUESTIONS.length*100)+'%</div><div class="l">📊 Nilai</div></div>';
+
+  let hero,title,msg;
+  if(correct>=7){ hero='🏆'; title='Juara Petualangan Angka!'; msg='Luar biasa, '+state.nama+'! Kamu menguasai penjumlahan dan pengurangan dengan sangat baik. Pertahankan terus ya! 🌟'; confetti(120);}
+  else if(correct>=5){ hero='🌟'; title='Hebat Sekali!'; msg='Bagus sekali, '+state.nama+'! Kamu sudah paham sebagian besar soal. Latihan sedikit lagi pasti makin jago! 💪'; confetti(80);}
+  else if(correct>=3){ hero='👍'; title='Tetap Semangat!'; msg='Kamu sudah berusaha bagus, '+state.nama+'! Yuk berlatih lagi supaya makin lancar. Kamu pasti bisa! 🚀'; confetti(50);}
+  else { hero='🌱'; title='Yuk Berlatih Lagi!'; msg='Tidak apa-apa, '+state.nama+'! Setiap juara pernah berlatih. Coba ulangi kuis ini dan lihat kemajuanmu. Semangat! 🌈'; confetti(40);}
+  $('#resHero').textContent=hero;
+  $('#resTitle').textContent=title;
+  $('#resMsg').textContent=msg;
+}
+
+$('#restartBtn').addEventListener('click',()=>{
+  state.idx=0; state.attempts=0; state.resolved=false; state.firstTryCorrect=[];
+  $('#progressWrap').style.display='block';
+  switchScreen('quiz');
+  renderQuestion();
+});
+
+$('#printBtn').addEventListener('click',()=>window.print());
+</script>
+</body>
+</html>
